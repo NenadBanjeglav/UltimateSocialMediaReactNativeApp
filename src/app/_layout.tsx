@@ -1,11 +1,7 @@
 import React from "react";
 import "../../global.css";
-import { Stack } from "expo-router";
-import {
-  ThemeProvider,
-  DefaultTheme,
-  DarkTheme,
-} from "@react-navigation/native";
+import { Slot } from "expo-router";
+import { ThemeProvider, DefaultTheme } from "@react-navigation/native";
 import { AuthProvider } from "@/providers/AuthProvider";
 
 const CustomTheme = {
@@ -21,10 +17,7 @@ const RootLayout = () => {
   return (
     <AuthProvider>
       <ThemeProvider value={CustomTheme}>
-        <Stack>
-          <Stack.Screen name="index" options={{ title: "Feed" }} />
-          <Stack.Screen name="post/[id]" options={{ title: "Post" }} />
-        </Stack>
+        <Slot />
       </ThemeProvider>
     </AuthProvider>
   );

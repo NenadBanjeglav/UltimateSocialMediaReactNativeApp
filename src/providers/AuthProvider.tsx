@@ -1,5 +1,12 @@
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { User } from "@/types/models";
+import * as SecureStore from "expo-secure-store";
 
 type Session = {
   user: User;
@@ -23,7 +30,12 @@ const avatar =
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadSession();
+  }, []);
+
   const signIn = (handle: string) => {
     //sign in with the server
     const session: Session = {
@@ -36,9 +48,33 @@ export function AuthProvider({ children }: PropsWithChildren) {
       accessToken: "accessToken",
     };
     setSession(session);
+    saveSession(session);
   };
+
   const signOut = () => {
     setSession(null);
+    saveSession(null);
+  };
+
+  const saveSession = async (value: Session | null) => {
+    if (value) {
+      //save
+      await SecureStore.setItemAsync("session", JSON.stringify(value));
+    } else {
+      //delete
+      await SecureStore.deleteItemAsync("session");
+    }
+  };
+
+  const loadSession = async () => {
+    const sessionData = await SecureStore.getItemAsync("session");
+    if (sessionData) {
+      setSession(JSON.parse(sessionData));
+    } else {
+      setSession(null);
+    }
+
+    setIsLoading(false);
   };
 
   return (

@@ -1,7 +1,19 @@
 import React from "react";
-import { Slot } from "expo-router";
+import { Redirect, Slot } from "expo-router";
+import { useAuth } from "@/providers/AuthProvider";
+import { ActivityIndicator } from "react-native";
 
 const AuthLayout = () => {
+  const { isLoading, session } = useAuth();
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (session) {
+    return <Redirect href={"/"} />;
+  }
+
   return <Slot />;
 };
 
